@@ -1,12 +1,35 @@
 import classNames from "classnames";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { HiCamera, HiArrowPath, HiArrowLeft } from "react-icons/hi2";
 import { useNavigate } from "react-router";
 
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+};
+
 export default function Camera() {
   const navigate = useNavigate();
   const webcamRef = useRef<Webcam | null>(null);
+  const { width, height } = useWindowSize();
+
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isFrontCamera, setIsFrontCamera] = useState<boolean>(true);
 
@@ -20,12 +43,12 @@ export default function Camera() {
     setImageUrl(null);
   };
 
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const isLandscape = windowHeight <= windowWidth;
-  const ratio = isLandscape
-    ? windowWidth / windowHeight
-    : windowHeight / windowWidth;
+  const getRatio = () => {
+    if (width === undefined || height === undefined) return undefined;
+
+    const isLandscape = height <= width;
+    return isLandscape ? width / height : height / width;
+  };
 
   return (
     <div className="h-screen w-full">
@@ -40,7 +63,7 @@ export default function Camera() {
               <HiArrowLeft className="w-4 h-4 text-white" />
             </button>
             <span className="text-sm">
-              {windowWidth}x{windowHeight}
+              {width}x{height}
             </span>
             <span className="text-sm">
               {isFrontCamera ? "Front Camera" : "Back Camera"}
@@ -53,18 +76,21 @@ export default function Camera() {
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
-          width={windowWidth}
-          height={windowHeight}
+          width={width}
+          height={height}
           videoConstraints={{
-            aspectRatio: ratio,
+            aspectRatio: getRatio(),
             facingMode: isFrontCamera ? "user" : "environment",
           }}
           disablePictureInPicture
           mirrored={isFrontCamera}
-          className={classNames("absolute top-0 left-0 w-full h-full", {
-            block: !imageUrl,
-            hidden: imageUrl,
-          })}
+          className={classNames(
+            "absolute top-0 left-0 w-full h-full object-cover",
+            {
+              block: !imageUrl,
+              hidden: imageUrl,
+            }
+          )}
         />
 
         <img
