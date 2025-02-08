@@ -32,6 +32,7 @@ export default function Camera() {
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isFrontCamera, setIsFrontCamera] = useState<boolean>(true);
+  const [isShowOverlay, setIsShowOverlay] = useState<boolean>(false);
 
   const capturePhoto = async () => {
     if (webcamRef.current === null) return;
@@ -49,6 +50,13 @@ export default function Camera() {
     const isLandscape = height <= width;
     return isLandscape ? width / height : height / width;
   };
+
+  useEffect(() => {
+    setIsShowOverlay(true);
+    setTimeout(() => {
+      setIsShowOverlay(false);
+    }, 1000);
+  }, [isFrontCamera, width, height]);
 
   return (
     <div className="h-screen w-full">
@@ -93,6 +101,7 @@ export default function Camera() {
           )}
         />
 
+        {/* Image Captured */}
         <img
           src={imageUrl ?? ""}
           alt=""
@@ -101,6 +110,15 @@ export default function Camera() {
             { block: imageUrl, hidden: !imageUrl }
           )}
         />
+
+        {/* Overlay */}
+
+        <div
+          className={classNames(
+            "w-full h-full absolute top-0 left-0 bg-black ",
+            { "opacity-100": isShowOverlay, "opacity-0": !isShowOverlay }
+          )}
+        ></div>
 
         {/* Camera Actions */}
         <div className="absolute bottom-10 inset-x-0 flex justify-between items-center px-12">
