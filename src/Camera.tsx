@@ -33,7 +33,7 @@ export default function Camera() {
               <HiArrowLeft className="w-4 h-4 text-white" />
             </button>
             <span className="text-sm">
-              {window.screen.width}x{window.screen.height}
+              {window.innerWidth}x{window.innerHeight}
             </span>
             <span className="text-sm">
               {isFrontCamera ? "Front Camera" : "Back Camera"}
@@ -47,16 +47,20 @@ export default function Camera() {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={{
-            // width: window.screen.width,
-            // height: window.screen.height,
+            // width: window.innerWidth,
+            // height: window.innerHeight,
+            aspectRatio: 9 / 16,
             facingMode: isFrontCamera ? "user" : "environment",
           }}
           disablePictureInPicture
           mirrored={isFrontCamera}
-          className={classNames("absolute top-0 left-0 w-full h-full", {
-            block: !imageUrl,
-            hidden: imageUrl,
-          })}
+          className={classNames(
+            "absolute top-0 left-0 w-full h-full object-cover",
+            {
+              block: !imageUrl,
+              hidden: imageUrl,
+            }
+          )}
         />
 
         <img
