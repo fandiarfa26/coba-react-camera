@@ -22,6 +22,10 @@ export default function Camera() {
 
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
+  const isLandscape = windowHeight <= windowWidth;
+  const ratio = isLandscape
+    ? windowWidth / windowHeight
+    : windowHeight / windowWidth;
 
   return (
     <div className="h-screen w-full">
@@ -52,7 +56,7 @@ export default function Camera() {
           width={windowWidth}
           height={windowHeight}
           videoConstraints={{
-            aspectRatio: windowWidth / windowHeight,
+            aspectRatio: ratio,
             facingMode: isFrontCamera ? "user" : "environment",
           }}
           disablePictureInPicture
