@@ -27,12 +27,17 @@ export default function Camera() {
         <div className="absolute top-0 inset-x-0 w-full bg-slate-50 p-3 z-10">
           <div className="flex justify-between items-center">
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded cursor-pointer"
               onClick={() => navigate("/")}
             >
               <HiArrowLeft className="w-4 h-4 text-white" />
             </button>
-            <span>{isFrontCamera ? "Front Camera" : "Back Camera"}</span>
+            <span className="text-sm">
+              {window.screen.width}x{window.screen.height}
+            </span>
+            <span className="text-sm">
+              {isFrontCamera ? "Front Camera" : "Back Camera"}
+            </span>
           </div>
         </div>
 
@@ -42,18 +47,16 @@ export default function Camera() {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           videoConstraints={{
-            aspectRatio: 9 / 16,
-            width: window.screen.width,
-            height: window.screen.height,
+            // width: window.screen.width,
+            // height: window.screen.height,
             facingMode: isFrontCamera ? "user" : "environment",
           }}
           disablePictureInPicture
           mirrored={isFrontCamera}
-          className={classNames(
-            "absolute top-0 left-0 w-full object-cover h-full",
-
-            { block: !imageUrl, hidden: imageUrl }
-          )}
+          className={classNames("absolute top-0 left-0 w-full h-full", {
+            block: !imageUrl,
+            hidden: imageUrl,
+          })}
         />
 
         <img
